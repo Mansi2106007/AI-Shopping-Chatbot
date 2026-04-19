@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — AI Shopping Bot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-icon">🛒</div>
+        <div class="brand-text">
+          <span class="brand-name">ShopBot</span>
+          <span class="brand-tag">AI</span>
+        </div>
+      </div>
+
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Sign in to your account to continue shopping</p>
+
+      <div id="alert" class="alert hidden"></div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="username" placeholder="Enter your username" autocomplete="username" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" />
+          <button class="eye-btn" onclick="togglePassword()" title="Show/hide password">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="loginBtn" onclick="handleLogin()">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loader hidden">⏳</span>
+      </button>
+
+      <div class="auth-footer">
+        Don't have an account?
+        <a href="/register.html">Create one →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if already logged in
+    if (sessionStorage.getItem('loggedIn') === 'true') {
+      window.location.href = '/index.html';
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function showAlert(msg, type = 'error') {
+      const el = document.getElementById('alert');
+      el.textContent = msg;
+      el.className = `alert ${type}`;
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('loginBtn');
+      const text = btn.querySelector('.btn-text');
+      const loader = btn.querySelector('.btn-loader');
+      btn.disabled = loading;
+      text.classList.toggle('hidden', loading);
+      loader.classList.toggle('hidden', !loading);
+    }
+
+    async function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!username) return showAlert('⚠️ Please enter your username');
+      if (!password) return showAlert('⚠️ Please enter your password');
+
+      setLoading(true);
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('✅ ' + data.message, 'success');
+          sessionStorage.setItem('loggedIn', 'true');
+          sessionStorage.setItem('username', data.username);
+          sessionStorage.setItem('email', data.email || '');
+          setTimeout(() => window.location.href = '/index.html', 800);
+        } else {
+          showAlert('❌ ' + data.message);
+        }
+      } catch (err) {
+        showAlert('🔴 Cannot connect to server. Is Spring Boot running?');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</body>
+</html>

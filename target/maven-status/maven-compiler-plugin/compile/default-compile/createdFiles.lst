@@ -1,0 +1,10 @@
+com\shoppingbot\controller\ChatbotController.class
+com\shoppingbot\service\ChatbotService.class
+com\shoppingbot\controller\AuthController.class
+com\shoppingbot\ShoppingBotApplication.class
+com\shoppingbot\service\UserService.class
+com\shoppingbot\config\SecurityConfig.class
+com\shoppingbot\model\Product.class
+com\shoppingbot\repository\ProductRepository.class
+com\shoppingbot\repository\UserRepository.class
+com\shoppingbot\model\User.class

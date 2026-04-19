@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — AI Shopping Bot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-icon">🛒</div>
+        <div class="brand-text">
+          <span class="brand-name">ShopBot</span>
+          <span class="brand-tag">AI</span>
+        </div>
+      </div>
+
+      <h1 class="auth-title">Create account</h1>
+      <p class="auth-sub">Join thousands of smart shoppers today</p>
+
+      <div id="alert" class="alert hidden"></div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="username" placeholder="Choose a username" autocomplete="username" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-wrap">
+          <span class="input-icon">📧</span>
+          <input type="email" id="email" placeholder="your@email.com" autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" placeholder="Min. 4 characters" autocomplete="new-password" />
+          <button class="eye-btn" onclick="togglePassword()" title="Show/hide password">👁</button>
+        </div>
+      </div>
+
+      <div class="password-strength" id="strengthBar">
+        <div class="strength-track"><div class="strength-fill" id="strengthFill"></div></div>
+        <span id="strengthLabel"></span>
+      </div>
+
+      <button class="btn-primary" id="registerBtn" onclick="handleRegister()">
+        <span class="btn-text">Create Account</span>
+        <span class="btn-loader hidden">⏳</span>
+      </button>
+
+      <div class="auth-footer">
+        Already have an account?
+        <a href="/login.html">Sign in →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (sessionStorage.getItem('loggedIn') === 'true') {
+      window.location.href = '/index.html';
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function showAlert(msg, type = 'error') {
+      const el = document.getElementById('alert');
+      el.textContent = msg;
+      el.className = `alert ${type}`;
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('registerBtn');
+      btn.disabled = loading;
+      btn.querySelector('.btn-text').classList.toggle('hidden', loading);
+      btn.querySelector('.btn-loader').classList.toggle('hidden', !loading);
+    }
+
+    // Password strength meter
+    document.getElementById('password').addEventListener('input', function () {
+      const val = this.value;
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+
+      if (!val) { fill.style.width = '0'; label.textContent = ''; return; }
+
+      let strength = 0;
+      if (val.length >= 4) strength++;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      const levels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+      const colors = ['', '#ff4444', '#ff8800', '#ffcc00', '#44cc44', '#00ff88'];
+      const pcts   = ['0%', '20%', '40%', '60%', '80%', '100%'];
+
+      fill.style.width = pcts[strength];
+      fill.style.background = colors[strength];
+      label.textContent = levels[strength];
+      label.style.color = colors[strength];
+    });
+
+    async function handleRegister() {
+      const username = document.getElementById('username').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!username) return showAlert('⚠️ Please enter a username');
+      if (username.length < 3) return showAlert('⚠️ Username must be at least 3 characters');
+      if (!email) return showAlert('⚠️ Please enter your email');
+      if (!/\S+@\S+\.\S+/.test(email)) return showAlert('⚠️ Invalid email format');
+      if (!password) return showAlert('⚠️ Please choose a password');
+      if (password.length < 4) return showAlert('⚠️ Password must be at least 4 characters');
+
+      setLoading(true);
+
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('✅ ' + data.message, 'success');
+          setTimeout(() => window.location.href = '/login.html', 1500);
+        } else {
+          showAlert('❌ ' + data.message);
+        }
+      } catch (err) {
+        showAlert('🔴 Cannot connect to server. Is Spring Boot running?');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleRegister();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Shopping Bot — Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/chat.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">🛒</div>
+        <div class="brand-text">
+          <span class="brand-name">ShopBot</span>
+          <span class="brand-tag">AI</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">User</div>
+        <div class="user-status">● Online</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Quick Ask</div>
+      <button class="quick-btn" onclick="sendQuick('I want a phone')">📱 Show Phones</button>
+      <button class="quick-btn" onclick="sendQuick('Phones under 10000')">💸 Under ₹10,000</button>
+      <button class="quick-btn" onclick="sendQuick('Phones under 20000')">💸 Under ₹20,000</button>
+      <button class="quick-btn" onclick="sendQuick('Show Samsung phones')">📱 Samsung</button>
+      <button class="quick-btn" onclick="sendQuick('Show all phones')">📋 All Phones</button>
+      <button class="quick-btn" onclick="sendQuick('help')">❓ Help</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main Chat Area -->
+  <main class="chat-main">
+    <!-- Top bar -->
+    <header class="chat-header">
+      <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="header-info">
+        <div class="header-title">🤖 AI Shopping Assistant</div>
+        <div class="header-status" id="headerStatus">
+          <span class="status-dot"></span> Ready to help
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="clearChat()" title="Clear chat">🗑</button>
+      </div>
+    </header>
+
+    <!-- Messages -->
+    <div class="chat-body" id="chatBody">
+      <!-- Welcome message injected by JS -->
+    </div>
+
+    <!-- Input bar -->
+    <div class="chat-input-bar">
+      <div class="input-container">
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Ask me about phones, budget, brands..."
+          autocomplete="off"
+          maxlength="300"
+        />
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Press <kbd>Enter</kbd> to send • Type <kbd>help</kbd> for tips</div>
+    </div>
+  </main>
+
+  <script src="/js/chat.js"></script>
+</body>
+</html>
